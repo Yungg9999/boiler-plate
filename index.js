@@ -3,7 +3,7 @@ const app = express()
 const port = 3500
 const bodyParser = require('body-parser')
 
-const config = require('./config/key')
+const config = require('./config/key')      
 
 const { User } = require("./models/User1")
 
@@ -20,7 +20,7 @@ mongoose.connect(config.mongoURI)
 .catch(err => console.log(err))
 
 app.get('/', (req, res) => {
-  res.send('Hello World!~~~~새해복많이')
+  res.send('Hello World!~~~~test')
 })
 
 app.post('/register', (req, res) => {
