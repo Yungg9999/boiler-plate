@@ -4,7 +4,7 @@ const port = 3500;
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const config = require('./config/key');
-
+const { auth } = require('./middleware/auth');
 const { User } = require("./models/User1");
 
 //application/x-www-form-urlencoded
@@ -66,10 +66,22 @@ app.post('/api/users/login',(req, res) =>{
       return res.status(400).send(err);
   })
 })
+// role 1 -> Admin, role 2 -> 특정 부서 Admin
+// role 0 -> 일반 role, 0이 아니면 -> Admin
+app.get('/api/users/auth', auth, (req, res) =>{
+  //여기까지 미들웨어(auth)를 통과해 왔다는 것은 Authentication이 Ture라는 것
+  res.status(200).json({
+    _id: req.user._id,
+    isAdmin: req.user.role === 0 ? false : true,
+    isAuth: true,
+    email: req.user.email,
+    name: req.user.name,
+    lastname: req.user.lastname,
+    role: req.user.role,
+    image: req.user.image
+  })
+})
 
-// app.get('/api/users/auth', auth, (req, res) =>{
-
-// })
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
