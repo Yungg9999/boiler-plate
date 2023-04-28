@@ -23,6 +23,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!~~~~test')
 })
 
+// 회원가입 기능
 app.post('/api/users/register', (req, res) => {
   
   //회원가입에 필요한 정보들을 client에서 가져오면
@@ -39,7 +40,7 @@ app.post('/api/users/register', (req, res) => {
             return res.json({success:false, err})
         });
 })
-
+// 로그인 기능
 app.post('/api/users/login',(req, res) =>{
   // 요청된 이메일을 데이터베이스 찾기
   User.findOne({email: req.body.email})
@@ -66,9 +67,12 @@ app.post('/api/users/login',(req, res) =>{
       return res.status(400).send(err);
   })
 })
+
+// auth 기능
 // role 1 -> Admin, role 2 -> 특정 부서 Admin
 // role 0 -> 일반 role, 0이 아니면 -> Admin
 app.get('/api/users/auth', auth, (req, res) =>{
+  //미들웨어 auth는 현재 접속중인지 판단
   //여기까지 미들웨어(auth)를 통과해 왔다는 것은 Authentication이 Ture라는 것
   res.status(200).json({
     _id: req.user._id,
@@ -81,7 +85,17 @@ app.get('/api/users/auth', auth, (req, res) =>{
     image: req.user.image
   })
 })
-
+// 로그아웃 기능 - DB의 토큰을 삭제
+app.get('/api/users/logout', auth, (req, res) =>{
+  // findOneAndUpdate -> DB에서 찾은 다음 변경하는 함수
+  User.findOneAndUpdate({ _id: req.user._id},{token: ""}).then(()=>{
+    return res.status(200).send({
+      success: true 
+    })
+  }).catch((err) =>{
+    return res.json({ success: false, err});
+  })
+})
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
